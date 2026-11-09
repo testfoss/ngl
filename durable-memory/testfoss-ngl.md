@@ -30,7 +30,7 @@ serves the repository with COOP/COEP and no-store headers, and invokes
 `cli="lmwebtest playwright"`; no direct Playwright test runner replaces it.
 The full local invocation is in `AGENTS.md` and `testfoss/README.md`.
 
-Browser tooling is pinned to lmctl 0.2.426 and lmwebtest v0.1.10
+Browser tooling is pinned to lmctl 0.2.469 and lmwebtest v0.1.10
 (commit `2920befd355eacc654697820d690db074e94dce3`, Linux x64 SHA-256
 `b90cb79fc2b00627da226e563f77a395fedcb95aca01b076af8ff14755009690`).
 

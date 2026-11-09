@@ -43,7 +43,7 @@ jobs:
           node-version: 24
       - name: Install browser-test tools
         run: |
-          npm install --global @lmctl-ai/lmctl@0.2.426
+          npm install --global @lmctl-ai/lmctl@0.2.469
           lmscript install github:lmctl-ai/lmwebtest@v0.1.10
           echo "$HOME/.cache/lmscript/tools/github/lmctl-ai/lmwebtest/v0.1.10" >> "$GITHUB_PATH"
           npm ci --prefix testfoss

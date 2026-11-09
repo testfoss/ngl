@@ -30,7 +30,7 @@ secrets or deployment.
 
 ## Exact browser pins
 
-- `@lmctl-ai/lmctl` `0.2.426` supplies `lmscript`.
+- `@lmctl-ai/lmctl` `0.2.469` supplies `lmscript`.
 - `lmwebtest` release `v0.1.10`, commit
   `2920befd355eacc654697820d690db074e94dce3`; Linux x64 executable SHA-256
   `b90cb79fc2b00627da226e563f77a395fedcb95aca01b076af8ff14755009690`.
