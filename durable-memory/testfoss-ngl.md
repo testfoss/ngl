@@ -45,3 +45,8 @@ analysis. Network-loaded RCSB examples are deliberately avoided.
 Generated `build/` output exists only after a local/CI build. `testfoss/pkg` is
 not used. No output structure, dependency directory, browser binary, or build
 artifact should be added to git.
+
+## Remote verification
+
+GitHub Actions run 42651534041 passed the Node 18 build, all 150 upstream tests
+with one intentional skip, and the Node 24 lmwebtest cofactor/surface/DCD scenario.
