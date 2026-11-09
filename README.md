@@ -86,3 +86,17 @@ When using NGL please cite:
 
 * AS Rose, AR Bradley, Y Valasatava, JM Duarte, A Prlić and PW Rose. _NGL viewer: web-based molecular graphics for large complexes._ Bioinformatics: bty419, 2018. [doi:10.1093/bioinformatics/bty419](http://dx.doi.org/10.1093/bioinformatics/bty419)
 * AS Rose and PW Hildebrand. _NGL Viewer: a web application for molecular visualization._ Nucl Acids Res (1 July 2015) 43 (W1): W576-W579 first published online April 29, 2015. [doi:10.1093/nar/gkv402](https://doi.org/10.1093/nar/gkv402)
+
+Testfoss demonstration fork
+---------------------------
+
+The `testfoss-demo` branch adds an isolated stock-controls demo without changing
+NGL source or examples. It loads the checked-in ferredoxin structure, toggles
+its cofactors and a molecular surface, and loads/seeks the checked-in ala3 DCD
+trajectory. See [testfoss/README.md](testfoss/README.md) for local commands and
+[AGENTS.md](AGENTS.md) for exact tool pins and contribution boundaries.
+
+`.github/workflows/testfoss.yml` builds NGL, runs the full Vitest suite, and
+drives the browser scenario through `lmwebtest playwright`. Generated builds,
+dependencies, and browser output are not checked in. This is a component-level
+browser check, not a pixel-regression or molecular-dynamics validation suite.

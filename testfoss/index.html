@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="data:,">
+  <title>NGL Testfoss stock controls</title>
+  <style>
+    :root { color-scheme: light; font-family: system-ui, sans-serif; }
+    body { max-width: 1100px; margin: 0 auto; padding: 1.5rem; color: #172033; background: #f6f8fc; }
+    main { background: white; border: 1px solid #dce3ef; border-radius: 12px; padding: 1.25rem; }
+    #viewport { width: 100%; height: 540px; border: 1px solid #cbd5e1; }
+    .controls { display: flex; flex-wrap: wrap; gap: .65rem; margin: 1rem 0; }
+    button { font: inherit; padding: .55rem .75rem; cursor: pointer; }
+    button:disabled { cursor: wait; opacity: .55; }
+    #status[data-status="error"] { color: #a11111; }
+    #status[data-status="ready"] { color: #17643a; }
+    pre { white-space: pre-wrap; overflow-wrap: anywhere; background: #111a29; color: #d8e7ff; padding: 1rem; min-height: 8rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>NGL stock structure controls</h1>
+    <p>The ferredoxin representations follow <code>examples/scripts/showcase/ferredoxin.js</code>. The DCD control follows <code>examples/scripts/parser/dcd.js</code>. Both use checked-in structures and the upstream development build.</p>
+    <div id="viewport" aria-label="NGL molecular viewport"></div>
+    <div class="controls">
+      <button id="cofactor" type="button" disabled>Toggle ferredoxin cofactors</button>
+      <button id="surface" type="button" disabled>Toggle molecular surface</button>
+      <button id="load-dcd" type="button" disabled>Load ala3 DCD</button>
+      <button id="next-frame" type="button" disabled>Next DCD frame</button>
+      <button id="reset" type="button" disabled>Reset ferredoxin</button>
+    </div>
+    <p id="status" role="status" data-status="loading">Loading NGL and ferredoxin…</p>
+    <pre id="results" data-testid="results">{}</pre>
+  </main>
+  <script src="../build/js/ngl.dev.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

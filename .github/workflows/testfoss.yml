@@ -1,0 +1,62 @@
+name: testfoss
+
+on:
+  push:
+    branches: [testfoss-demo]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: testfoss-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build-test-browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out the additive fork
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
+      - name: Set up Node.js 18 for upstream NGL
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 18
+          cache: npm
+      - name: Install upstream dependencies
+        run: npm ci
+      - name: Build upstream NGL
+        run: npm run build
+      - name: Run upstream unit tests
+        run: npm test -- --run
+      - name: Set up Node.js 24 for lmwebtest
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+      - name: Install browser-test tools
+        run: |
+          npm install --global @lmctl-ai/lmctl@0.2.426
+          lmscript install github:lmctl-ai/lmwebtest@v0.1.10
+          echo "$HOME/.cache/lmscript/tools/github/lmctl-ai/lmwebtest/v0.1.10" >> "$GITHUB_PATH"
+          npm ci --prefix testfoss
+          npm run --prefix testfoss browsers:install
+      - name: Check additive JavaScript syntax
+        run: node --check testfoss/app.js
+      - name: Run stock controls through lmwebtest
+        env:
+          TESTFOSS_URL: http://127.0.0.1:8000
+        run: |
+          python3 testfoss/server.py --root . --port 8000 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          lmwebtest --version
+          export TESTFOSS_CHROMIUM="$(node --input-type=module -e "import { chromium } from './testfoss/node_modules/playwright/index.mjs'; console.log(chromium.executablePath())")"
+          lmscript testfoss/browser.lms

@@ -1,0 +1,75 @@
+# Run from the repository root after `npm run build` and starting testfoss/server.py.
+let base_url = env("TESTFOSS_URL", "http://127.0.0.1:8000");
+
+program = _lmcode_ cli="lmwebtest playwright";
+let launch_options = "{}";
+if (pw.env("TESTFOSS_CHROMIUM") != "") {
+  launch_options = "{\"executablePath\":\"" + pw.env("TESTFOSS_CHROMIUM") + "\"}";
+}
+let b = pw.launch("chromium", launch_options);
+let p = b.new_page();
+p.set_default_timeout(60000);
+p.goto(pw.env("TESTFOSS_URL") + "/testfoss/");
+p.locator("#status").expect("toHaveText", "[\"Ferredoxin ready\"]");
+$return.initial = json_parse(p.text_content("#results"));
+
+p.click("#cofactor");
+p.locator("#status").expect("toHaveText", "[\"Cofactors hidden\"]");
+$return.cofactorHidden = json_parse(p.text_content("#results"));
+p.click("#cofactor");
+p.locator("#status").expect("toHaveText", "[\"Cofactors shown\"]");
+
+p.click("#surface");
+p.locator("#status").expect("toHaveText", "[\"Surface shown\"]");
+$return.surfaceShown = json_parse(p.text_content("#results"));
+p.click("#surface");
+p.locator("#status").expect("toHaveText", "[\"Surface hidden\"]");
+
+p.click("#load-dcd");
+p.locator("#status").expect("toHaveText", "[\"DCD ready\"]");
+$return.dcd = json_parse(p.text_content("#results"));
+p.click("#next-frame");
+p.locator("#status").expect("toHaveText", "[\"DCD frame 2\"]");
+$return.nextFrame = json_parse(p.text_content("#results"));
+$return.console = p.console_log();
+$return.pageErrors = p.page_errors();
+b.close();
+end _lmcode_
+
+let res = run_lmcode(program, {command: ["lmwebtest", "playwright", "--lmcode", "$DSLFILE"]});
+let stats = {pass: 0, fail: 0};
+fn check(condition, name, detail) {
+  if (condition) {
+    stats["pass"] = stats.get("pass", 0) + 1;
+    println(f"[PASS] {name}: {detail}");
+  } else {
+    stats["fail"] = stats.get("fail", 0) + 1;
+    println(f"[FAIL] {name}: {detail}");
+  }
+}
+check(res.get("ok", false), "lmcode run", "NGL Playwright program completed");
+if (!res.get("ok", false)) {
+  println(json_stringify(res));
+  exit(1);
+}
+let r = res.get("result", {});
+let initial = r.get("initial", {});
+let hidden = r.get("cofactorHidden", {});
+let surface = r.get("surfaceShown", {});
+let dcd = r.get("dcd", {});
+let next = r.get("nextFrame", {});
+check(initial.get("structure", "") == "1blu.mmtf", "stock ferredoxin", initial.get("structure", ""));
+check(initial.get("atomCount", 0) > 0, "parsed ferredoxin atoms", str(initial.get("atomCount", 0)));
+check(initial.get("cofactorVisible", false), "stock cofactor representations", "visible on load");
+check(!hidden.get("cofactorVisible", true), "cofactor control", "all cofactor representations hidden");
+check(surface.get("surfaceVisible", false), "surface control", "molecular surface shown");
+check(contains(surface.get("representations", []), "surface"), "surface representation", "registered with the structure component");
+check(dcd.get("trajectory", "") == "ala3.dcd", "stock DCD", dcd.get("trajectory", ""));
+check(dcd.get("frameCount", 0) > 2, "DCD frame count", str(dcd.get("frameCount", 0)));
+check(dcd.get("currentFrame", -1) == 1, "DCD seek", "frame 1 selected");
+check(next.get("currentFrame", -1) == 2, "next-frame control", "frame 2 selected");
+check(r.get("pageErrors", "") == "[]", "browser page errors", r.get("pageErrors", ""));
+println(f"NGL browser integration: {stats.pass} passed, {stats.fail} failed");
+if (stats.fail > 0) {
+  exit(1);
+}

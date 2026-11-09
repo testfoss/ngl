@@ -1,0 +1,13 @@
+{
+  "name": "testfoss-ngl",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Additive browser checks for the Testfoss NGL fork",
+  "scripts": {
+    "browsers:install": "playwright install chromium",
+    "test:browser": "lmscript browser.lms"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0"
+  }
+}
